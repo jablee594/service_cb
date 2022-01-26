@@ -4,7 +4,7 @@ import java.sql.*;
 
 public class connectionDB {
 
-    public static final String DB_URL = "jdbc:h2:/service_cb/db/servicedb";
+    public static final String DB_URL = "jdbc:h2:/service_cb/db/ExchangeRateDB";
     public static final String DB_Driver = "org.h2.Driver";
 
     public static void main(String[] args) {
