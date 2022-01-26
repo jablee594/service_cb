@@ -6,7 +6,7 @@ import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
 
-public class requestdate {
+public class requestdaily {
     String date = "22/01/2001";
     String codeval = "22/01/2001";
 
