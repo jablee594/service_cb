@@ -7,12 +7,10 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 
 public class requestdaily {
-    String date = "22/01/2001";
-    String codeval = "22/01/2001";
 
     public StringBuffer request(String[] args) throws IOException {
 
-        String urlcb = "http://www.cbr.ru/scripts/XML_daily.asp?date_req=" + date;
+        String urlcb = "http://www.cbr.ru/scripts/XML_daily.asp?date_req=";
         URL url = new URL(urlcb);
         HttpURLConnection connection = (HttpURLConnection) url.openConnection();
 
