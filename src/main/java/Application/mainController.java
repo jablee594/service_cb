@@ -6,11 +6,10 @@ import java.io.InputStreamReader;
 import java.io.StringReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
-import java.net.URLConnection;
 import java.util.ResourceBundle;
 
-import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
+import javafx.scene.control.Button;
 import javafx.scene.control.TextField;
 import javafx.scene.text.Text;
 import org.w3c.dom.Document;
@@ -33,6 +32,9 @@ public class mainController {
     private URL location;
 
     @FXML
+    public Button button_output;
+
+    @FXML
     public TextField date;
 
     @FXML
@@ -46,12 +48,13 @@ public class mainController {
 
     }
 
-    public void onClickMethod(ActionEvent actionEvent) throws IOException, ParserConfigurationException, XPathExpressionException, SAXException {
+    public void onClickMethod() throws IOException, ParserConfigurationException, XPathExpressionException, SAXException {
         String getUserDate = date.getText();
+        String getUserCode = charcode.getText();
         if (!getUserDate.equals("")) {
-            String outputurl = "http://www.cbr.ru/scripts/XML_daily.asp?date_req=" + date;
+            String output = "http://www.cbr.ru/scripts/XML_daily.asp?date_req=" + getUserDate;
 
-            URL url = new URL(outputurl);
+            URL url = new URL(output);
             HttpURLConnection connection = (HttpURLConnection) url.openConnection();
 
             BufferedReader in = new BufferedReader(new InputStreamReader(connection.getInputStream()));
@@ -69,7 +72,7 @@ public class mainController {
             in.close();
 
 
-            if (!outputurl.isEmpty()) {
+            if (!output.isEmpty()) {
                 NodeList nl = null;
                 String result = null;
 
@@ -80,7 +83,7 @@ public class mainController {
                 XPathFactory xPathfactory = XPathFactory.newInstance();
                 XPath xpath = xPathfactory.newXPath();
 
-                XPathExpression cod = xpath.compile("//ValCurs/Valute[CharCode='" + charcode + "']/Value/text()");
+                XPathExpression cod = xpath.compile("//ValCurs/Valute[CharCode='" + getUserCode + "']/Value/text()");
 
                 nl = (NodeList) cod.evaluate(doc, XPathConstants.NODESET);
 
