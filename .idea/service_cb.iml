@@ -14,6 +14,7 @@
     <orderEntry type="library" exported="" name="org.h2.Driver" level="project" />
     <orderEntry type="library" name="javafx" level="project" />
     <orderEntry type="library" name="org.h2.Driver (2)" level="project" />
+    <orderEntry type="library" name="Maven: com.h2database:h2:2.1.210" level="project" />
     <orderEntry type="library" name="Maven: org.openjfx:javafx-fxml:17.0.0.1" level="project" />
     <orderEntry type="library" name="Maven: org.openjfx:javafx-fxml:linux:17.0.0.1" level="project" />
     <orderEntry type="library" name="Maven: org.openjfx:javafx-controls:17.0.0.1" level="project" />

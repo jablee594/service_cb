@@ -1,0 +1,12 @@
+2022-01-31 11:25:43 jdbc[3]: exception
+org.h2.jdbc.JdbcSQLSyntaxErrorException: Таблица "VALUTE" уже существует
+Table "VALUTE" already exists; SQL statement:
+CREATE TABLE VALUTE (id number, valutecode varchar(20), charcode varchar(20)) [42101-210]
+2022-01-31 11:25:57 jdbc[3]: exception
+org.h2.jdbc.JdbcSQLSyntaxErrorException: Таблица "VALUTE" уже существует
+Table "VALUTE" already exists; SQL statement:
+CREATE TABLE VALUTE (id number, valutecode varchar(20), charcode varchar(20)) [42101-210]
+2022-01-31 11:25:58 jdbc[3]: exception
+org.h2.jdbc.JdbcSQLSyntaxErrorException: Таблица "VALUTE" уже существует
+Table "VALUTE" already exists; SQL statement:
+CREATE TABLE VALUTE (id number, valutecode varchar(20), charcode varchar(20)) [42101-210]
