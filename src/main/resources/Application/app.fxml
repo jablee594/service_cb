@@ -63,9 +63,20 @@
           </font>
         </Label>
             <ButtonBar layoutX="173.0" layoutY="265.0" prefHeight="40.0" prefWidth="40.0" />
-            <TextField id="date" layoutX="67.0" layoutY="86.0" promptText="date" text="dd/mm/yyyy" />
-            <TextField id="charcode" layoutX="67.0" layoutY="151.0" />
-            <Button id=" button_output" onAction="#onClickMethod" layoutX="167.0" layoutY="195.0" mnemonicParsing="false" text="Узнать.">
+            <TextField id="date"
+                       layoutX="67.0"
+                       layoutY="86.0"
+                       promptText="date"
+                       text="dd/mm/yyyy" />
+            <TextField id="charcode"
+                       layoutX="67.0"
+                       layoutY="151.0" />
+            <Button id="button_output"
+                    onAction="#onClickMethod"
+                    layoutX="167.0"
+                    layoutY="195.0"
+                    mnemonicParsing="false"
+                    text="Узнать.">
                <contextMenu>
                   <ContextMenu>
                     <items>
@@ -76,8 +87,19 @@
             </Button>
             <Label layoutX="67.0" layoutY="69.0" text="Дата" />
             <Label layoutX="67.0" layoutY="134.0" text="Код валюты" />
-            <Label id="result_text" layoutX="349.0" layoutY="69.0" prefHeight="17.0" prefWidth="97.0" text="Результат:" />
-            <Text id="text_output" layoutX="349.0" layoutY="103.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Курс равен:" wrappingWidth="97.0" />
+            <Label id="result_text"
+                   layoutX="349.0"
+                   layoutY="69.0"
+                   prefHeight="17.0"
+                   prefWidth="97.0"
+                   text="Результат:" />
+            <Text id="text_output"
+                  layoutX="349.0"
+                  layoutY="103.0"
+                  strokeType="OUTSIDE"
+                  strokeWidth="0.0"
+                  text="Курс равен:"
+                  wrappingWidth="97.0" />
       </children>
     </AnchorPane>
   </children>
