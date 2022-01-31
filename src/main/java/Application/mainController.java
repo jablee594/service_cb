@@ -4,6 +4,7 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.StringReader;
+import java.net.HttpURLConnection;
 import java.net.URL;
 import java.net.URLConnection;
 import java.util.ResourceBundle;
@@ -48,20 +49,29 @@ public class mainController {
     public void onClickMethod(ActionEvent actionEvent) throws IOException, ParserConfigurationException, XPathExpressionException, SAXException {
         String getUserDate = date.getText();
         if (!getUserDate.equals("")) {
-            String output = getUrlContent("http://www.cbr.ru/scripts/XML_daily.asp?date_req=" + date);
+            String outputurl = "http://www.cbr.ru/scripts/XML_daily.asp?date_req=" + date;
+
+            URL url = new URL(outputurl);
+            HttpURLConnection connection = (HttpURLConnection) url.openConnection();
+
+            BufferedReader in = new BufferedReader(new InputStreamReader(connection.getInputStream()));
+            String inputLine = null;
             StringBuffer content = new StringBuffer();
 
-            URL url = new URL(urlAddress);
-            URLConnection urlConn = url.openConnection();
+            while (true) {
+                try {
+                    if ((inputLine = in.readLine()) == null) break;
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+                content.append(inputLine);
+            }
+            in.close();
 
-            BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(urlConn.getInputStream()));
-            String line;
 
-
-            String result = null;
-            if (!output.isEmpty()) {
+            if (!outputurl.isEmpty()) {
                 NodeList nl = null;
-                result = null;
+                String result = null;
 
                 DocumentBuilderFactory domFactory = DocumentBuilderFactory.newInstance();
                 DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
@@ -84,4 +94,6 @@ public class mainController {
 
             }
         }
+
     }
+}
