@@ -12,8 +12,8 @@ public class connectionDB {
             Class.forName(DB_Driver); //Проверяем наличие JDBC драйвера для работы с БД
             Connection connection = DriverManager.getConnection(DB_URL);//соединениесБД
             System.out.println("Соединение с СУБД выполнено.");
-            connection.close();       // отключение от БД
-            System.out.println("Отключение от СУБД выполнено.");
+            //connection.close();       // отключение от БД
+            //System.out.println("Отключение от СУБД выполнено.");
         } catch (ClassNotFoundException e) {
             e.printStackTrace(); // обработка ошибки  Class.forName
             System.out.println("JDBC драйвер для СУБД не найден!");
