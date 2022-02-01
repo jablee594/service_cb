@@ -5,9 +5,11 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.StringReader;
 import java.net.HttpURLConnection;
+import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ResourceBundle;
 
+import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
 import javafx.scene.control.TextField;
@@ -48,7 +50,8 @@ public class mainController {
 
     }
 
-    public void onClickMethod() throws IOException, ParserConfigurationException, XPathExpressionException, SAXException {
+    @FXML
+    void onClickMethod(ActionEvent actionEvent) throws IOException, ParserConfigurationException, SAXException, XPathExpressionException {
         String getUserDate = date.getText();
         String getUserCode = charcode.getText();
         if (!getUserDate.equals("")) {
@@ -91,12 +94,10 @@ public class mainController {
                     Node n = nl.item(i);
                     result = n.getTextContent();
                 }
-
                 text_output.setText("Курс равен: " + result);
 
 
             }
         }
-
     }
 }
