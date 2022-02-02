@@ -20,7 +20,7 @@
             <ButtonBar layoutX="173.0" layoutY="265.0" prefHeight="40.0" prefWidth="40.0" />
             <TextField fx:id="date" layoutX="67.0" layoutY="86.0" promptText="dd/mm/yyyy" />
             <TextField fx:id="charcode" layoutX="67.0" layoutY="151.0" promptText="example: USD" />
-            <Button id="button_output" layoutX="167.0" layoutY="195.0" mnemonicParsing="false" onAction="#onClickMethod" text="Узнать">
+            <Button id="dailybutton" layoutX="167.0" layoutY="195.0" mnemonicParsing="false" onAction="#onClickMethodDaily" text="Узнать">
                <contextMenu>
                   <ContextMenu>
                     <items>
@@ -44,7 +44,7 @@
             </LineChart>
             <Label layoutX="292.0" layoutY="61.0" text="Первая дата" />
             <Label layoutX="478.0" layoutY="61.0" text="Вторая дата" />
-            <Button id="dynamicbutton" layoutX="699.0" layoutY="86.0" mnemonicParsing="false" text="Узнать" />
+            <Button id="dynamicbutton" layoutX="699.0" layoutY="86.0" mnemonicParsing="false" onAction="#onClickMethodDynamic" text="Узнать" />
       </children>
     </AnchorPane>
   </children>

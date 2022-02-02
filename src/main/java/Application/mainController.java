@@ -5,16 +5,14 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.StringReader;
 import java.net.HttpURLConnection;
-import java.net.MalformedURLException;
 import java.net.URL;
-import java.util.ResourceBundle;
 
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.chart.LineChart;
-import javafx.scene.control.Button;
 import javafx.scene.control.TextField;
 import javafx.scene.text.Text;
+import org.w3c.dom.DOMException;
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
@@ -29,9 +27,6 @@ import javax.xml.xpath.*;
 public class mainController {
 
     @FXML
-    private ResourceBundle resources;
-
-    @FXML
     private LineChart<?, ?> chart;
 
     @FXML
@@ -39,12 +34,6 @@ public class mainController {
 
     @FXML
     private TextField seconddate;
-
-    @FXML
-    private URL location;
-
-    @FXML
-    public Button button_output;
 
     @FXML
     public TextField date;
@@ -57,13 +46,13 @@ public class mainController {
 
     @FXML
     void initialize() {
-
     }
 
     @FXML
-    void onClickMethod(ActionEvent actionEvent) throws IOException, ParserConfigurationException, SAXException, XPathExpressionException {
+    void onClickMethodDaily(ActionEvent actionEvent) throws IOException, ParserConfigurationException, SAXException, XPathExpressionException {
         String getUserDate = date.getText();
         String getUserCode = charcode.getText();
+
         if (!getUserDate.equals("")) {
             String output = "http://www.cbr.ru/scripts/XML_daily.asp?date_req=" + getUserDate;
 
@@ -109,5 +98,116 @@ public class mainController {
 
             }
         }
+    }
+
+    @FXML
+    void onClickMethodDynamic(ActionEvent actionEvent) throws IOException {
+        String getUserCode = charcode.getText();
+        String getUserFDate = firstdate.getText();
+        String getUserSDate = seconddate.getText();
+        String valutecode = Valutecode(getUserCode);
+
+        String url = "http://www.cbr.ru/scripts/XML_dynamic.asp?date_req1="+getUserFDate+"&date_req2="+getUserSDate+"&VAL_NM_RQ="+valutecode;
+
+        URL obj = new URL(url);
+        HttpURLConnection connection = (HttpURLConnection) obj.openConnection();
+
+        connection.setRequestMethod("GET");
+
+        BufferedReader in = new BufferedReader(new InputStreamReader(connection.getInputStream()));
+        String inputLine = null;
+        StringBuilder listdymamic = new StringBuilder();
+
+        while (true) {
+            try {
+                if ((inputLine = in.readLine()) == null) break;
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+            listdymamic.append(inputLine);
+        }
+        in.close();
+
+        NodeList value;
+        NodeList date;
+
+        //String dates = null;
+        try {
+            DocumentBuilderFactory domFactory = DocumentBuilderFactory.newInstance();
+            DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
+            DocumentBuilder builder = factory.newDocumentBuilder();
+            Document doc = builder.parse(new InputSource(new StringReader(listdymamic.toString())));
+
+            XPathFactory xPathfactory = XPathFactory.newInstance();
+            XPath xpath = xPathfactory.newXPath();
+
+            XPathExpression valV = xpath.compile("/ValCurs/Record/Value");
+
+            XPathExpression valD = xpath.compile("/ValCurs/Record/@Date");
+
+            value = (NodeList) valV.evaluate(doc, XPathConstants.NODESET);
+            date = (NodeList) valD.evaluate(doc, XPathConstants.NODESET);
+
+            for (int i = 0; i < value.getLength(); i++) {
+                System.out.println(value.item(i).getTextContent());
+            }
+
+            for (int j = 0; j < date.getLength(); j++) {
+                System.out.println(date.item(j).getTextContent());
+            }
+
+        } catch (ParserConfigurationException | SAXException | IOException | XPathExpressionException | DOMException e) {
+            e.printStackTrace();
+        }
+
+    }
+
+    public static String Valutecode(String getUserCode) throws IOException {
+        String url = "http://www.cbr.ru/scripts/XML_daily.asp";
+
+        URL obj = new URL(url);
+        HttpURLConnection connection = (HttpURLConnection) obj.openConnection();
+
+        connection.setRequestMethod("GET");
+
+        BufferedReader in = new BufferedReader(new InputStreamReader(connection.getInputStream()));
+        String inputLine = null;
+        StringBuilder list = new StringBuilder();
+
+        while (true) {
+            try {
+                if ((inputLine = in.readLine()) == null) break;
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+            list.append(inputLine);
+        }
+        in.close();
+
+
+        NodeList nl;
+
+        String valutecode = null;
+        try {
+            DocumentBuilderFactory domFactory = DocumentBuilderFactory.newInstance();
+            DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
+            DocumentBuilder builder = factory.newDocumentBuilder();
+            Document doc = builder.parse(new InputSource(new StringReader(list.toString())));
+            XPathFactory xPathfactory = XPathFactory.newInstance();
+            XPath xpath = xPathfactory.newXPath();
+
+            XPathExpression cod = xpath.compile("//ValCurs/Valute[CharCode='" + getUserCode + "']/@ID");
+
+            nl = (NodeList) cod.evaluate(doc, XPathConstants.NODESET);
+
+            for (int i = 0; i < nl.getLength(); i++) {
+                Node n = nl.item(i);
+                valutecode = n.getTextContent();
+            }
+
+        } catch (ParserConfigurationException | SAXException | IOException | XPathExpressionException | DOMException e) {
+            e.printStackTrace();
+        }
+        return valutecode;
     }
 }
