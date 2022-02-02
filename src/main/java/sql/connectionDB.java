@@ -12,6 +12,16 @@ public class connectionDB {
             Class.forName(DB_Driver); //Проверяем наличие JDBC драйвера для работы с БД
             Connection connection = DriverManager.getConnection(DB_URL);//соединениесБД
             System.out.println("Соединение с СУБД выполнено.");
+            Statement st = null;
+            st = connection.createStatement();
+            ResultSet result;
+            result = st.executeQuery("SELECT * FROM VALUTE");
+            while (result.next()) {
+                String vcode = result.getString("valutecode");
+                String cc = result.getString("charcode");
+                //System.out.println(result.getString("ID")+" "+vcode+" "+cc);
+                System.out.println(vcode + cc);
+            }
             //connection.close();       // отключение от БД
             //System.out.println("Отключение от СУБД выполнено.");
         } catch (ClassNotFoundException e) {
