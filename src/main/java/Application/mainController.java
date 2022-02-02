@@ -11,6 +11,7 @@ import java.util.ResourceBundle;
 
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
+import javafx.scene.chart.LineChart;
 import javafx.scene.control.Button;
 import javafx.scene.control.TextField;
 import javafx.scene.text.Text;
@@ -29,6 +30,15 @@ public class mainController {
 
     @FXML
     private ResourceBundle resources;
+
+    @FXML
+    private LineChart<?, ?> chart;
+
+    @FXML
+    private TextField firstdate;
+
+    @FXML
+    private TextField seconddate;
 
     @FXML
     private URL location;

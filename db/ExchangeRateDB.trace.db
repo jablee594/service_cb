@@ -10,3 +10,77 @@ CREATE TABLE VALUTE (id number, valutecode varchar(20), charcode varchar(20)) [4
 org.h2.jdbc.JdbcSQLSyntaxErrorException: Таблица "VALUTE" уже существует
 Table "VALUTE" already exists; SQL statement:
 CREATE TABLE VALUTE (id number, valutecode varchar(20), charcode varchar(20)) [42101-210]
+2022-02-02 01:21:49 database: flush
+org.h2.message.DbException: Внутренняя ошибка: "org.h2.mvstore.MVStoreException: The file is locked: /home/platytsin/IdeaProjects/service_cb/db/ExchangeRateDB.mv.db [2.1.210/7]"
+General error: "org.h2.mvstore.MVStoreException: The file is locked: /home/platytsin/IdeaProjects/service_cb/db/ExchangeRateDB.mv.db [2.1.210/7]" [50000-210]
+	at org.h2.message.DbException.get(DbException.java:216)
+	at org.h2.message.DbException.convert(DbException.java:414)
+	at org.h2.mvstore.db.Store.lambda$new$0(Store.java:120)
+	at org.h2.mvstore.MVStore.handleException(MVStore.java:3296)
+	at org.h2.mvstore.MVStore.panic(MVStore.java:585)
+	at org.h2.mvstore.MVStore.<init>(MVStore.java:461)
+	at org.h2.mvstore.MVStore$Builder.open(MVStore.java:4056)
+	at org.h2.mvstore.db.Store.<init>(Store.java:129)
+	at org.h2.engine.Database.<init>(Database.java:324)
+	at org.h2.engine.Engine.openSession(Engine.java:92)
+	at org.h2.engine.Engine.openSession(Engine.java:222)
+	at org.h2.engine.Engine.createSession(Engine.java:201)
+	at org.h2.engine.SessionRemote.connectEmbeddedOrServer(SessionRemote.java:338)
+	at org.h2.jdbc.JdbcConnection.<init>(JdbcConnection.java:122)
+	at org.h2.Driver.connect(Driver.java:59)
+	at java.sql/java.sql.DriverManager.getConnection(DriverManager.java:681)
+	at java.sql/java.sql.DriverManager.getConnection(DriverManager.java:252)
+	at service.cb/sql.connectionDB.main(connectionDB.java:13)
+Caused by: org.h2.jdbc.JdbcSQLNonTransientException: Внутренняя ошибка: "org.h2.mvstore.MVStoreException: The file is locked: /home/platytsin/IdeaProjects/service_cb/db/ExchangeRateDB.mv.db [2.1.210/7]"
+General error: "org.h2.mvstore.MVStoreException: The file is locked: /home/platytsin/IdeaProjects/service_cb/db/ExchangeRateDB.mv.db [2.1.210/7]" [50000-210]
+	at org.h2.message.DbException.getJdbcSQLException(DbException.java:573)
+	at org.h2.message.DbException.getJdbcSQLException(DbException.java:496)
+	... 18 more
+Caused by: org.h2.mvstore.MVStoreException: The file is locked: /home/platytsin/IdeaProjects/service_cb/db/ExchangeRateDB.mv.db [2.1.210/7]
+	at org.h2.mvstore.DataUtils.newMVStoreException(DataUtils.java:1004)
+	at org.h2.mvstore.FileStore.open(FileStore.java:163)
+	at org.h2.mvstore.MVStore.<init>(MVStore.java:444)
+	... 12 more
+2022-02-02 01:22:24 jdbc[3]: exception
+org.h2.jdbc.JdbcSQLSyntaxErrorException: Столбец "NAME" не найден
+Column "NAME" not found [42122-210]
+	at org.h2.message.DbException.getJdbcSQLException(DbException.java:521)
+	at org.h2.message.DbException.getJdbcSQLException(DbException.java:496)
+	at org.h2.message.DbException.get(DbException.java:227)
+	at org.h2.message.DbException.get(DbException.java:203)
+	at org.h2.jdbc.JdbcResultSet.getColumnIndex(JdbcResultSet.java:3492)
+	at org.h2.jdbc.JdbcResultSet.getString(JdbcResultSet.java:301)
+	at service.cb/sql.connectionDB.main(connectionDB.java:20)
+2022-02-02 01:46:25 jdbc[4]: exception
+org.h2.jdbc.JdbcSQLSyntaxErrorException: Синтаксическая ошибка в выражении SQL "[*]WHERE CHARCODE = 'USD'"
+Syntax error in SQL statement "[*]WHERE CHARCODE = 'USD'"; SQL statement:
+WHERE CHARCODE = 'USD' [42000-210]
+2022-02-02 01:47:19 jdbc[4]: exception
+org.h2.jdbc.JdbcSQLSyntaxErrorException: Синтаксическая ошибка в выражении SQL "SELECT * FROM VALUTE [*]* WHERE charcode = 'USD'"
+Syntax error in SQL statement "SELECT * FROM VALUTE [*]* WHERE charcode = 'USD'"; SQL statement:
+SELECT * FROM VALUTE * WHERE charcode = 'USD' [42000-210]
+2022-02-02 01:52:42 jdbc[5]: null
+org.h2.message.DbException: Незакрытое приложением соединение уничтожено сборщиком мусора
+The connection was not closed by the application and is garbage collected [90018-210]
+	at org.h2.message.DbException.get(DbException.java:227)
+	at org.h2.message.DbException.get(DbException.java:203)
+	at org.h2.message.DbException.get(DbException.java:192)
+	at org.h2.jdbc.JdbcConnection.closeOld(JdbcConnection.java:190)
+	at org.h2.jdbc.JdbcConnection.<init>(JdbcConnection.java:132)
+	at org.h2.util.JdbcUtils.getConnection(JdbcUtils.java:288)
+	at org.h2.server.web.WebServer.getConnection(WebServer.java:807)
+	at org.h2.server.web.WebApp.login(WebApp.java:1033)
+	at org.h2.server.web.WebApp.process(WebApp.java:226)
+	at org.h2.server.web.WebApp.processRequest(WebApp.java:176)
+	at org.h2.server.web.WebThread.process(WebThread.java:153)
+	at org.h2.server.web.WebThread.run(WebThread.java:102)
+	at java.lang.Thread.run(Thread.java:748)
+Caused by: org.h2.jdbc.JdbcSQLNonTransientConnectionException: Незакрытое приложением соединение уничтожено сборщиком мусора
+The connection was not closed by the application and is garbage collected [90018-210]
+	at org.h2.message.DbException.getJdbcSQLException(DbException.java:697)
+	at org.h2.message.DbException.getJdbcSQLException(DbException.java:496)
+	... 13 more
+2022-02-02 01:53:54 jdbc[5]: exception
+org.h2.jdbc.JdbcSQLSyntaxErrorException: Синтаксическая ошибка в выражении SQL "SELECT * FROM VALUTE [*]* WHERE charcode = 'USD'"
+Syntax error in SQL statement "SELECT * FROM VALUTE [*]* WHERE charcode = 'USD'"; SQL statement:
+SELECT * FROM VALUTE * WHERE charcode = 'USD' [42000-210]
