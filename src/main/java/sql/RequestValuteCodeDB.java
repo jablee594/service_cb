@@ -2,7 +2,7 @@ package sql;
 
 import java.sql.*;
 
-public class connectionDB {
+public class RequestValuteCodeDB {
 
     public static final String DB_URL = "jdbc:h2:~/IdeaProjects/service_cb/db/ExchangeRateDB";
     public static final String DB_Driver = "org.h2.Driver";
@@ -15,15 +15,13 @@ public class connectionDB {
             Statement st = null;
             st = connection.createStatement();
             ResultSet result;
-            result = st.executeQuery("SELECT * FROM VALUTE");
+            result = st.executeQuery("SELECT * FROM VALUTE WHERE CHARCODE = 'USD'");
             while (result.next()) {
                 String vcode = result.getString("valutecode");
-                String cc = result.getString("charcode");
-                //System.out.println(result.getString("ID")+" "+vcode+" "+cc);
-                System.out.println(vcode + cc);
+                System.out.println(vcode);
             }
-            //connection.close();       // отключение от БД
-            //System.out.println("Отключение от СУБД выполнено.");
+            connection.close();       // отключение от БД
+            System.out.println("Отключение от СУБД выполнено.");
         } catch (ClassNotFoundException e) {
             e.printStackTrace(); // обработка ошибки  Class.forName
             System.out.println("JDBC драйвер для СУБД не найден!");
