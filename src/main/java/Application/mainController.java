@@ -10,6 +10,7 @@ import java.net.URL;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.chart.LineChart;
+import javafx.scene.chart.XYChart;
 import javafx.scene.control.TextField;
 import javafx.scene.text.Text;
 import org.w3c.dom.DOMException;
@@ -27,7 +28,7 @@ import javax.xml.xpath.*;
 public class mainController {
 
     @FXML
-    private LineChart<?, ?> chart;
+    private LineChart<String, Number> chart;
 
     @FXML
     private TextField firstdate;
@@ -46,6 +47,17 @@ public class mainController {
 
     @FXML
     void initialize() {
+        /*
+        XYChart.Series<String, Number> series = new XYChart.Series<String, Number>();
+
+        series.getData().add(new XYChart.Data<String, Number>("01/02/2000", 0));
+        series.getData().add(new XYChart.Data<String, Number>("05/02/2000", 4));
+        series.getData().add(new XYChart.Data<String, Number>("06/02/2000", 8));
+        series.getData().add(new XYChart.Data<String, Number>("10/02/2000", 12));
+
+        chart.getData().add(series);
+
+         */
     }
 
     @FXML
@@ -130,10 +142,9 @@ public class mainController {
 
         NodeList value;
         NodeList date;
+        XYChart.Series<String, Number> series = new XYChart.Series<String, Number>();
 
-        //String dates = null;
         try {
-            DocumentBuilderFactory domFactory = DocumentBuilderFactory.newInstance();
             DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
             DocumentBuilder builder = factory.newDocumentBuilder();
             Document doc = builder.parse(new InputSource(new StringReader(listdymamic.toString())));
@@ -141,7 +152,7 @@ public class mainController {
             XPathFactory xPathfactory = XPathFactory.newInstance();
             XPath xpath = xPathfactory.newXPath();
 
-            XPathExpression valV = xpath.compile("/ValCurs/Record/Value");
+            XPathExpression valV = xpath.compile("/ValCurs/Record/Value/text()");
 
             XPathExpression valD = xpath.compile("/ValCurs/Record/@Date");
 
@@ -149,12 +160,13 @@ public class mainController {
             date = (NodeList) valD.evaluate(doc, XPathConstants.NODESET);
 
             for (int i = 0; i < value.getLength(); i++) {
-                System.out.println(value.item(i).getTextContent());
+                String valuestring = value.item(i).getTextContent();
+                //System.out.println(value.item(i).getTextContent().getClass().getSimpleName());
+                //System.out.println(date.item(i).getNodeValue());
+                double valued = Double.parseDouble(valuestring);
+                //series.getData().add(new XYChart.Data<String, Number>(date.item(i).getTextContent(), value.item(i).getTextContent()));
             }
-
-            for (int j = 0; j < date.getLength(); j++) {
-                System.out.println(date.item(j).getTextContent());
-            }
+           // chart.getData().add(series);
 
         } catch (ParserConfigurationException | SAXException | IOException | XPathExpressionException | DOMException e) {
             e.printStackTrace();
@@ -189,7 +201,6 @@ public class mainController {
 
         String valutecode = null;
         try {
-            DocumentBuilderFactory domFactory = DocumentBuilderFactory.newInstance();
             DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
             DocumentBuilder builder = factory.newDocumentBuilder();
             Document doc = builder.parse(new InputSource(new StringReader(list.toString())));
