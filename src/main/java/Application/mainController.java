@@ -160,13 +160,11 @@ public class mainController {
             date = (NodeList) valD.evaluate(doc, XPathConstants.NODESET);
 
             for (int i = 0; i < value.getLength(); i++) {
-                String valuestring = value.item(i).getTextContent();
-                //System.out.println(value.item(i).getTextContent().getClass().getSimpleName());
-                //System.out.println(date.item(i).getNodeValue());
+                String valuestring = value.item(i).getTextContent().replace(',', '.');
                 double valued = Double.parseDouble(valuestring);
-                //series.getData().add(new XYChart.Data<String, Number>(date.item(i).getTextContent(), value.item(i).getTextContent()));
+                series.getData().add(new XYChart.Data<String, Number>(date.item(i).getTextContent(), valued));
             }
-           // chart.getData().add(series);
+            chart.getData().add(series);
 
         } catch (ParserConfigurationException | SAXException | IOException | XPathExpressionException | DOMException e) {
             e.printStackTrace();
