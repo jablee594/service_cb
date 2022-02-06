@@ -159,6 +159,11 @@ public class mainController {
             value = (NodeList) valV.evaluate(doc, XPathConstants.NODESET);
             date = (NodeList) valD.evaluate(doc, XPathConstants.NODESET);
 
+            //глюк с анимацией
+            chart.setAnimated(false);
+
+            series.setName(getUserCode);
+
             for (int i = 0; i < value.getLength(); i++) {
                 String valuestring = value.item(i).getTextContent().replace(',', '.');
                 double valued = Double.parseDouble(valuestring);
