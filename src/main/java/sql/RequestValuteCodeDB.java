@@ -12,6 +12,7 @@ public class RequestValuteCodeDB {
             Class.forName(DB_Driver); //Проверяем наличие JDBC драйвера для работы с БД
             Connection connection = DriverManager.getConnection(DB_URL);//соединениесБД
             System.out.println("Соединение с СУБД выполнено.");
+            /*
             Statement st = null;
             st = connection.createStatement();
             ResultSet result;
@@ -20,6 +21,8 @@ public class RequestValuteCodeDB {
                 String vcode = result.getString("valutecode");
                 System.out.println(vcode);
             }
+
+             */
             connection.close();       // отключение от БД
             System.out.println("Отключение от СУБД выполнено.");
         } catch (ClassNotFoundException e) {

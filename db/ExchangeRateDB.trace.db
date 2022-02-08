@@ -84,3 +84,42 @@ The connection was not closed by the application and is garbage collected [90018
 org.h2.jdbc.JdbcSQLSyntaxErrorException: Синтаксическая ошибка в выражении SQL "SELECT * FROM VALUTE [*]* WHERE charcode = 'USD'"
 Syntax error in SQL statement "SELECT * FROM VALUTE [*]* WHERE charcode = 'USD'"; SQL statement:
 SELECT * FROM VALUTE * WHERE charcode = 'USD' [42000-210]
+2022-02-08 20:28:34 jdbc[3]: exception
+org.h2.jdbc.JdbcSQLSyntaxErrorException: Синтаксическая ошибка в выражении SQL "DROP [*]VALUTE"; ожидалось "TABLE, INDEX, USER, SEQUENCE, CONSTANT, TRIGGER, VIEW, ROLE, ALIAS, SCHEMA, ALL, DOMAIN, TYPE, DATATYPE, AGGREGATE, SYNONYM"
+Syntax error in SQL statement "DROP [*]VALUTE"; expected "TABLE, INDEX, USER, SEQUENCE, CONSTANT, TRIGGER, VIEW, ROLE, ALIAS, SCHEMA, ALL, DOMAIN, TYPE, DATATYPE, AGGREGATE, SYNONYM"; SQL statement:
+DROP VALUTE [42001-210]
+2022-02-08 20:28:50 jdbc[3]: exception
+org.h2.jdbc.JdbcSQLSyntaxErrorException: Синтаксическая ошибка в выражении SQL "DROP TABLE [*]*VALUTE"; ожидалось "identifier"
+Syntax error in SQL statement "DROP TABLE [*]*VALUTE"; expected "identifier"; SQL statement:
+DROP TABLE *VALUTE [42001-210]
+2022-02-08 20:40:05 database: flush
+org.h2.message.DbException: Внутренняя ошибка: "org.h2.mvstore.MVStoreException: The file is locked: /home/platytsin/IdeaProjects/service_cb/db/ExchangeRateDB.mv.db [2.1.210/7]"
+General error: "org.h2.mvstore.MVStoreException: The file is locked: /home/platytsin/IdeaProjects/service_cb/db/ExchangeRateDB.mv.db [2.1.210/7]" [50000-210]
+	at org.h2.message.DbException.get(DbException.java:216)
+	at org.h2.message.DbException.convert(DbException.java:414)
+	at org.h2.mvstore.db.Store.lambda$new$0(Store.java:120)
+	at org.h2.mvstore.MVStore.handleException(MVStore.java:3296)
+	at org.h2.mvstore.MVStore.panic(MVStore.java:585)
+	at org.h2.mvstore.MVStore.<init>(MVStore.java:461)
+	at org.h2.mvstore.MVStore$Builder.open(MVStore.java:4056)
+	at org.h2.mvstore.db.Store.<init>(Store.java:129)
+	at org.h2.engine.Database.<init>(Database.java:324)
+	at org.h2.engine.Engine.openSession(Engine.java:92)
+	at org.h2.engine.Engine.openSession(Engine.java:222)
+	at org.h2.engine.Engine.createSession(Engine.java:201)
+	at org.h2.engine.SessionRemote.connectEmbeddedOrServer(SessionRemote.java:338)
+	at org.h2.jdbc.JdbcConnection.<init>(JdbcConnection.java:122)
+	at org.h2.Driver.connect(Driver.java:59)
+	at java.sql/java.sql.DriverManager.getConnection(DriverManager.java:681)
+	at java.sql/java.sql.DriverManager.getConnection(DriverManager.java:252)
+	at service.cb/sql.RequestValuteCodeDB.main(RequestValuteCodeDB.java:13)
+Caused by: org.h2.jdbc.JdbcSQLNonTransientException: Внутренняя ошибка: "org.h2.mvstore.MVStoreException: The file is locked: /home/platytsin/IdeaProjects/service_cb/db/ExchangeRateDB.mv.db [2.1.210/7]"
+General error: "org.h2.mvstore.MVStoreException: The file is locked: /home/platytsin/IdeaProjects/service_cb/db/ExchangeRateDB.mv.db [2.1.210/7]" [50000-210]
+	at org.h2.message.DbException.getJdbcSQLException(DbException.java:573)
+	at org.h2.message.DbException.getJdbcSQLException(DbException.java:496)
+	... 18 more
+Caused by: org.h2.mvstore.MVStoreException: The file is locked: /home/platytsin/IdeaProjects/service_cb/db/ExchangeRateDB.mv.db [2.1.210/7]
+	at org.h2.mvstore.DataUtils.newMVStoreException(DataUtils.java:1004)
+	at org.h2.mvstore.FileStore.open(FileStore.java:163)
+	at org.h2.mvstore.MVStore.<init>(MVStore.java:444)
+	... 12 more
