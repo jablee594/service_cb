@@ -6,13 +6,21 @@ import java.io.InputStreamReader;
 import java.io.StringReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
+import java.util.Date;
+import java.util.Locale;
 
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.chart.LineChart;
 import javafx.scene.chart.XYChart;
+import javafx.scene.control.DatePicker;
 import javafx.scene.control.TextField;
 import javafx.scene.text.Text;
+import javafx.util.StringConverter;
 import org.w3c.dom.DOMException;
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
@@ -31,13 +39,13 @@ public class mainController {
     private LineChart<String, Number> chart;
 
     @FXML
-    private TextField firstdate;
+    private DatePicker firstdate;
 
     @FXML
-    private TextField seconddate;
+    private DatePicker seconddate;
 
     @FXML
-    public TextField date;
+    public DatePicker date;
 
     @FXML
     public TextField charcode;
@@ -47,22 +55,19 @@ public class mainController {
 
     @FXML
     void initialize() {
-        /*
-        XYChart.Series<String, Number> series = new XYChart.Series<String, Number>();
 
-        series.getData().add(new XYChart.Data<String, Number>("01/02/2000", 0));
-        series.getData().add(new XYChart.Data<String, Number>("05/02/2000", 4));
-        series.getData().add(new XYChart.Data<String, Number>("06/02/2000", 8));
-        series.getData().add(new XYChart.Data<String, Number>("10/02/2000", 12));
-
-        chart.getData().add(series);
-
-         */
     }
 
     @FXML
-    void onClickMethodDaily(ActionEvent actionEvent) throws IOException, ParserConfigurationException, SAXException, XPathExpressionException {
-        String getUserDate = date.getText();
+    void onClickMethodDaily(ActionEvent actionEvent) throws IOException, ParserConfigurationException, SAXException, XPathExpressionException, ParseException {
+
+        LocalDate dateonerequest = date.getValue();
+        String strdate = dateonerequest.toString();
+        SimpleDateFormat dt = new SimpleDateFormat("yyyy-mm-dd");
+        Date date = dt.parse(strdate);
+        SimpleDateFormat dt1 = new SimpleDateFormat("dd-mm-yyyy");
+        String getUserDate = dt1.format(date).replace('-', '/');
+
         String getUserCode = charcode.getText();
 
         if (!getUserDate.equals("")) {
@@ -113,10 +118,24 @@ public class mainController {
     }
 
     @FXML
-    void onClickMethodDynamic(ActionEvent actionEvent) throws IOException {
+    void onClickMethodDynamic(ActionEvent actionEvent) throws IOException, ParseException {
         String getUserCode = charcode.getText();
-        String getUserFDate = firstdate.getText();
-        String getUserSDate = seconddate.getText();
+
+        LocalDate datefirst = firstdate.getValue();
+        String strfdate = datefirst.toString();
+        SimpleDateFormat dtf = new SimpleDateFormat("yyyy-mm-dd");
+        Date datef = dtf.parse(strfdate);
+        SimpleDateFormat dt1f = new SimpleDateFormat("dd-mm-yyyy");
+        String getUserFDate = dt1f.format(datef).replace('-', '/');
+
+        LocalDate datesecond = seconddate.getValue();
+        String strsdate = datesecond.toString();
+        SimpleDateFormat dts = new SimpleDateFormat("yyyy-mm-dd");
+        Date dates = dts.parse(strsdate);
+        SimpleDateFormat dt1s = new SimpleDateFormat("dd-mm-yyyy");
+        String getUserSDate = dt1s.format(dates).replace('-', '/');
+
+
         String valutecode = Valutecode(getUserCode);
 
         String url = "http://www.cbr.ru/scripts/XML_dynamic.asp?date_req1="+getUserFDate+"&date_req2="+getUserSDate+"&VAL_NM_RQ="+valutecode;
