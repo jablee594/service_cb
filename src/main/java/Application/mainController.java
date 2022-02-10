@@ -10,6 +10,8 @@ import java.sql.*;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Date;
 
 import javafx.event.ActionEvent;
@@ -32,8 +34,6 @@ import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.xpath.*;
 
-import static sql.RequestValuteCodeDB.DB_URL;
-
 public class mainController {
 
     @FXML
@@ -55,7 +55,28 @@ public class mainController {
     public Text text_output;
 
     @FXML
-    void initialize() {
+    void initialize() throws ClassNotFoundException, SQLException {
+
+        Class.forName("org.h2.Driver");
+        Connection connection4 = DriverManager.getConnection("jdbc:h2:~/IdeaProjects/service_cb/db/ExchangeRateDB");
+
+        Statement statement = connection4.createStatement();
+        ResultSet resultSet = statement.executeQuery("select * from service where name = 'Курс USD с : 01/02/2022 по: 03/02/2022'");
+        String resultdate = null;
+        while (resultSet.next()) {
+            resultdate = resultSet.getString("date").replace("[", "").replace("]","");
+
+        }
+        ArrayList<String> result = new ArrayList<String>(Arrays.asList(resultdate.split(",")));
+        //System.out.println(result);
+
+        double[] doubles = new double[result.size()];
+        for (int i = 0; i < result.size(); i++){
+            doubles[i] = Double.parseDouble(result.get(i));
+        }
+        System.out.println(doubles);
+
+        connection4.close();
 
     }
 
@@ -168,6 +189,9 @@ public class mainController {
             String getUserCode = charcode.getText();
             if (!getUserCode.equals("")) {
 
+                ArrayList<String> dateList = new ArrayList<>();
+                ArrayList<String> valueList = new ArrayList<>();
+
                 String valutecode = Valutecode(getUserCode);
 
                 String url = "http://www.cbr.ru/scripts/XML_dynamic.asp?date_req1=" + getUserFDate + "&date_req2=" + getUserSDate + "&VAL_NM_RQ=" + valutecode;
@@ -218,21 +242,23 @@ public class mainController {
                         String valuestring = value.item(i).getTextContent().replace(',', '.');
                         double valued = Double.parseDouble(valuestring);
                         series.getData().add(new XYChart.Data<String, Number>(date.item(i).getTextContent(), valued));
+                        dateList.add(date.item(i).getTextContent());
+                        valueList.add(String.valueOf(valued));
                     }
                     chart.getData().add(series);
 
+                    //System.out.println(dateList);
+                    //System.out.println(valueList);
 
-                    /*
                     Class.forName("org.h2.Driver");
                     Connection connection1 = DriverManager.getConnection("jdbc:h2:~/IdeaProjects/service_cb/db/ExchangeRateDB");
 
                     Statement statement = connection1.createStatement();
-                    statement.execute("insert into service(name, date, code, valute) values('Курс "+getUserCode+" с : "+getUserFDate+" по: "+getUserSDate+"', '"+...date+"', '"+getUserCode+"', '"++"')");
+                    statement.execute("insert into service(name, date, code, valute) values('Курс "+getUserCode+" с : "+getUserFDate+" по: "+getUserSDate+"', '"+dateList+"', '"+getUserCode+"', '"+valueList+"')");
 
                     ResultSet resultSet = statement.executeQuery("select * from service");
                     System.out.println(resultSet);
                     connection.disconnect();
-                     */
 
             }else {
                 Alert alert = new Alert(Alert.AlertType.INFORMATION);
