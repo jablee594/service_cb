@@ -6,6 +6,7 @@ import java.io.InputStreamReader;
 import java.io.StringReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.sql.*;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.time.LocalDate;
@@ -59,7 +60,7 @@ public class mainController {
     }
 
     @FXML
-    void onClickMethodDaily(ActionEvent actionEvent) throws IOException, ParserConfigurationException, SAXException, XPathExpressionException, ParseException {
+    void onClickMethodDaily(ActionEvent actionEvent) throws IOException, ParserConfigurationException, SAXException, XPathExpressionException, ParseException, SQLException, ClassNotFoundException {
         if (date.getValue() != null) {
             LocalDate dateonerequest = date.getValue();
             String strdate = dateonerequest.toString();
@@ -113,6 +114,15 @@ public class mainController {
                     }
                     text_output.setText("Курс равен: " + result);
 
+                    Class.forName("org.h2.Driver");
+                    Connection connection1 = DriverManager.getConnection("jdbc:h2:~/IdeaProjects/service_cb/db/ExchangeRateDB");
+
+                    Statement statement = connection1.createStatement();
+                    statement.execute("insert into service(name, date, code, valute) values('Курс "+getUserCode+" на: "+getUserDate+"','"+getUserDate+"', '"+getUserCode+"', '"+result+"')");
+
+                    ResultSet resultSet = statement.executeQuery("select * from service");
+                    System.out.println(resultSet);
+                    connection.disconnect();
 
                 }
             }else {
@@ -137,7 +147,7 @@ public class mainController {
     }
 
     @FXML
-    void onClickMethodDynamic(ActionEvent actionEvent) throws IOException, ParseException {
+    void onClickMethodDynamic(ActionEvent actionEvent) throws IOException, ParseException, ClassNotFoundException, ParserConfigurationException, SAXException, XPathExpressionException, SQLException {
 
         if(firstdate.getValue() != null || seconddate.getValue() != null) {
             LocalDate datefirst = firstdate.getValue();
@@ -185,7 +195,6 @@ public class mainController {
                 NodeList date;
                 XYChart.Series<String, Number> series = new XYChart.Series<String, Number>();
 
-                try {
                     DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
                     DocumentBuilder builder = factory.newDocumentBuilder();
                     Document doc = builder.parse(new InputSource(new StringReader(listdymamic.toString())));
@@ -212,9 +221,19 @@ public class mainController {
                     }
                     chart.getData().add(series);
 
-                } catch (ParserConfigurationException | SAXException | IOException | XPathExpressionException | DOMException e) {
-                    e.printStackTrace();
-                }
+
+                    /*
+                    Class.forName("org.h2.Driver");
+                    Connection connection1 = DriverManager.getConnection("jdbc:h2:~/IdeaProjects/service_cb/db/ExchangeRateDB");
+
+                    Statement statement = connection1.createStatement();
+                    statement.execute("insert into service(name, date, code, valute) values('Курс "+getUserCode+" с : "+getUserFDate+" по: "+getUserSDate+"', '"+...date+"', '"+getUserCode+"', '"++"')");
+
+                    ResultSet resultSet = statement.executeQuery("select * from service");
+                    System.out.println(resultSet);
+                    connection.disconnect();
+                     */
+
             }else {
                 Alert alert = new Alert(Alert.AlertType.INFORMATION);
 
