@@ -14,11 +14,15 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
 
+import javafx.beans.Observable;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.chart.LineChart;
 import javafx.scene.chart.XYChart;
 import javafx.scene.control.Alert;
+import javafx.scene.control.ComboBox;
 import javafx.scene.control.DatePicker;
 import javafx.scene.control.TextField;
 import javafx.scene.text.Text;
@@ -40,6 +44,9 @@ public class mainController {
     private LineChart<String, Number> chart;
 
     @FXML
+    private ComboBox<String> requesthistory;
+
+    @FXML
     private DatePicker firstdate;
 
     @FXML
@@ -56,28 +63,20 @@ public class mainController {
 
     @FXML
     void initialize() throws ClassNotFoundException, SQLException {
+        ArrayList<String> historyList = new ArrayList<>();
 
         Class.forName("org.h2.Driver");
-        Connection connection4 = DriverManager.getConnection("jdbc:h2:~/IdeaProjects/service_cb/db/ExchangeRateDB");
+        Connection connection = DriverManager.getConnection("jdbc:h2:~/IdeaProjects/service_cb/db/ExchangeRateDB");
 
-        Statement statement = connection4.createStatement();
-        ResultSet resultSet = statement.executeQuery("select * from service where name = 'Курс USD с : 01/02/2022 по: 03/02/2022'");
-        String resultdate = null;
+        Statement statement = connection.createStatement();
+        ResultSet resultSet = statement.executeQuery("select name from service");
+
         while (resultSet.next()) {
-            resultdate = resultSet.getString("date").replace("[", "").replace("]","");
-
+            historyList.add(resultSet.getString("name"));
         }
-        ArrayList<String> result = new ArrayList<String>(Arrays.asList(resultdate.split(",")));
-        //System.out.println(result);
 
-        double[] doubles = new double[result.size()];
-        for (int i = 0; i < result.size(); i++){
-            doubles[i] = Double.parseDouble(result.get(i));
-        }
-        System.out.println(doubles);
-
-        connection4.close();
-
+        requesthistory.getItems().setAll(historyList);
+        connection.close();
     }
 
     @FXML
@@ -326,5 +325,34 @@ public class mainController {
             e.printStackTrace();
         }
         return valutecode;
+    }
+
+    public void onClickMethodHistory(ActionEvent actionEvent) {
+        System.out.println("Click!");
+
+        /*
+        Class.forName("org.h2.Driver");
+        Connection connection4 = DriverManager.getConnection("jdbc:h2:~/IdeaProjects/service_cb/db/ExchangeRateDB");
+
+        Statement statement = connection4.createStatement();
+        ResultSet resultSet = statement.executeQuery("select * from service where name = 'Курс USD с : 01/02/2022 по: 03/02/2022'");
+        String resultdate = null;
+        while (resultSet.next()) {
+            resultdate = resultSet.getString("date").replace("[", "").replace("]","");
+
+        }
+        ArrayList<String> result = new ArrayList<String>(Arrays.asList(resultdate.split(",")));
+        //System.out.println(result);
+
+        //double[] doubles = new double[result.size()];
+        for (int i = 0; i < result.size(); i++){
+            double d = Double.parseDouble(result.get(i));
+            System.out.println(d);
+        }
+        //System.out.println(doubles);
+
+        connection4.close();
+
+         */
     }
 }
