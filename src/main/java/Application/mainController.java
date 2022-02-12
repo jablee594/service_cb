@@ -181,38 +181,40 @@ public class mainController {
             SimpleDateFormat dt1s = new SimpleDateFormat("dd-mm-yyyy");
             String getUserSDate = dt1s.format(dates).replace('-', '/');
 
-            String getUserCode = charcode.getText();
-            if (!getUserCode.equals("")) {
+            if (datesecond.isAfter(datefirst)) {
 
-                ArrayList<String> dateList = new ArrayList<>();
-                ArrayList<String> valueList = new ArrayList<>();
+                String getUserCode = charcode.getText();
+                if (!getUserCode.equals("")) {
 
-                String valutecode = Valutecode(getUserCode);
+                    ArrayList<String> dateList = new ArrayList<>();
+                    ArrayList<String> valueList = new ArrayList<>();
 
-                String url = "http://www.cbr.ru/scripts/XML_dynamic.asp?date_req1=" + getUserFDate + "&date_req2=" + getUserSDate + "&VAL_NM_RQ=" + valutecode;
+                    String valutecode = Valutecode(getUserCode);
 
-                URL obj = new URL(url);
-                HttpURLConnection connection = (HttpURLConnection) obj.openConnection();
+                    String url = "http://www.cbr.ru/scripts/XML_dynamic.asp?date_req1=" + getUserFDate + "&date_req2=" + getUserSDate + "&VAL_NM_RQ=" + valutecode;
 
-                connection.setRequestMethod("GET");
+                    URL obj = new URL(url);
+                    HttpURLConnection connection = (HttpURLConnection) obj.openConnection();
 
-                BufferedReader in = new BufferedReader(new InputStreamReader(connection.getInputStream()));
-                String inputLine = null;
-                StringBuilder listdymamic = new StringBuilder();
+                    connection.setRequestMethod("GET");
 
-                while (true) {
-                    try {
-                        if ((inputLine = in.readLine()) == null) break;
-                    } catch (IOException e) {
-                        e.printStackTrace();
+                    BufferedReader in = new BufferedReader(new InputStreamReader(connection.getInputStream()));
+                    String inputLine = null;
+                    StringBuilder listdymamic = new StringBuilder();
+
+                    while (true) {
+                        try {
+                            if ((inputLine = in.readLine()) == null) break;
+                        } catch (IOException e) {
+                            e.printStackTrace();
+                        }
+                        listdymamic.append(inputLine);
                     }
-                    listdymamic.append(inputLine);
-                }
-                in.close();
+                    in.close();
 
-                NodeList value;
-                NodeList date;
-                XYChart.Series<String, Number> series = new XYChart.Series<String, Number>();
+                    NodeList value;
+                    NodeList date;
+                    XYChart.Series<String, Number> series = new XYChart.Series<String, Number>();
 
                     DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
                     DocumentBuilder builder = factory.newDocumentBuilder();
@@ -247,18 +249,27 @@ public class mainController {
                     Connection connectionsql = DriverManager.getConnection("jdbc:h2:~/IdeaProjects/service_cb/db/ExchangeRateDB");
 
                     Statement statement = connectionsql.createStatement();
-                    statement.execute("insert into service(name, date, code, valute) values('Курс "+getUserCode+" с : "+getUserFDate+" по: "+getUserSDate+"', '"+dateList+"', '"+getUserCode+"', '"+valueList+"')");
+                    statement.execute("insert into service(name, date, code, valute) values('Курс " + getUserCode + " с : " + getUserFDate + " по: " + getUserSDate + "', '" + dateList + "', '" + getUserCode + "', '" + valueList + "')");
 
                     connectionsql.close();
 
                     initialize();
 
+                } else {
+                    Alert alert = new Alert(Alert.AlertType.INFORMATION);
+
+                    alert.setTitle("test");
+                    alert.setHeaderText(null);
+                    alert.setContentText("Введите код!");
+
+                    alert.showAndWait();
+                }
             }else {
                 Alert alert = new Alert(Alert.AlertType.INFORMATION);
 
                 alert.setTitle("test");
                 alert.setHeaderText(null);
-                alert.setContentText("Введите код!");
+                alert.setContentText("Введите правельные даты!");
 
                 alert.showAndWait();
             }
