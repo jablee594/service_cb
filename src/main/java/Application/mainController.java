@@ -140,6 +140,7 @@ public class mainController {
                     ResultSet resultSet = statement.executeQuery("select * from service");
                     connectionsql.close();
 
+                    initialize();
                 }
             }else {
                 Alert alert = new Alert(Alert.AlertType.INFORMATION);
@@ -242,8 +243,6 @@ public class mainController {
                     }
                     chart.getData().add(series);
 
-                    //System.out.println(dateList);
-                    //System.out.println(valueList);
 
                     Class.forName("org.h2.Driver");
                     Connection connection1 = DriverManager.getConnection("jdbc:h2:~/IdeaProjects/service_cb/db/ExchangeRateDB");
@@ -254,6 +253,8 @@ public class mainController {
                     ResultSet resultSet = statement.executeQuery("select * from service");
                     System.out.println(resultSet);
                     connection.disconnect();
+
+                    initialize();
 
             }else {
                 Alert alert = new Alert(Alert.AlertType.INFORMATION);
@@ -366,26 +367,8 @@ public class mainController {
             }
         }
         connection.close();
-        /*
-        Class.forName("org.h2.Driver");
-        Connection connection = DriverManager.getConnection("jdbc:h2:~/IdeaProjects/service_cb/db/ExchangeRateDB");
 
-        Statement statement = connection.createStatement();
-        ResultSet resultSet = statement.executeQuery("select * from service where name = 'Курс USD с : 01/02/2022 по: 03/02/2022'");
-        String resultdate = null;
-        while (resultSet.next()) {
-            resultdate = resultSet.getString("date").replace("[", "").replace("]","");
-
-        }
-        ArrayList<String> result = new ArrayList<String>(Arrays.asList(resultdate.split(",")));
-        for (int i = 0; i < result.size(); i++){
-            double d = Double.parseDouble(result.get(i));
-            System.out.println(d);
-        }
-
-        connection.close();
-
-         */
+        initialize();
     }
 
     @FXML
@@ -397,5 +380,7 @@ public class mainController {
         statement.execute("delete from service");
 
         connection.close();
+
+        initialize();
     }
 }
