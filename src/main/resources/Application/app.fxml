@@ -5,7 +5,9 @@
 <?import javafx.scene.chart.NumberAxis?>
 <?import javafx.scene.control.Button?>
 <?import javafx.scene.control.ButtonBar?>
+<?import javafx.scene.control.ComboBox?>
 <?import javafx.scene.control.ContextMenu?>
+<?import javafx.scene.control.DatePicker?>
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.control.MenuItem?>
 <?import javafx.scene.control.TextField?>
@@ -13,14 +15,13 @@
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.Text?>
 
-<VBox prefHeight="566.0" prefWidth="857.0" xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1" fx:controller="Application.mainController">
+<VBox prefHeight="757.0" prefWidth="1080.0" xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1" fx:controller="Application.mainController">
   <children>
     <AnchorPane maxHeight="-1.0" maxWidth="-1.0" prefHeight="438.0" prefWidth="593.0" VBox.vgrow="ALWAYS">
       <children>
             <ButtonBar layoutX="173.0" layoutY="265.0" prefHeight="40.0" prefWidth="40.0" />
-            <TextField fx:id="date" layoutX="67.0" layoutY="86.0" promptText="dd/mm/yyyy" />
-            <TextField fx:id="charcode" layoutX="67.0" layoutY="151.0" promptText="example: USD" />
-            <Button id="dailybutton" layoutX="167.0" layoutY="195.0" mnemonicParsing="false" onAction="#onClickMethodDaily" text="Узнать">
+            <TextField fx:id="charcode" layoutX="342.0" layoutY="58.0" promptText="example: USD" />
+            <Button id="dailybutton" layoutX="47.0" layoutY="101.0" mnemonicParsing="false" onAction="#onClickMethodDaily" text="Узнать">
                <contextMenu>
                   <ContextMenu>
                     <items>
@@ -29,12 +30,10 @@
                   </ContextMenu>
                </contextMenu>
             </Button>
-            <Label layoutX="67.0" layoutY="69.0" text="Дата" />
-            <Label layoutX="67.0" layoutY="134.0" text="Код валюты" />
-            <Text fx:id="text_output" layoutX="79.0" layoutY="260.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Курс равен:" wrappingWidth="145.0" />
-            <TextField fx:id="firstdate" layoutX="287.0" layoutY="86.0" promptText="dd/mm/yyyy" />
-            <TextField fx:id="seconddate" layoutX="478.0" layoutY="86.0" promptText="dd/mm/yyyy" />
-            <LineChart fx:id="chart" layoutX="328.0" layoutY="134.0">
+            <Label layoutX="45.0" layoutY="41.0" text="Дата" />
+            <Label layoutX="343.0" layoutY="41.0" text="Код валюты" />
+            <Text fx:id="text_output" layoutX="183.0" layoutY="118.0" strokeType="OUTSIDE" strokeWidth="0.0" wrappingWidth="145.0" />
+            <LineChart fx:id="chart" layoutX="35.0" layoutY="253.0" prefHeight="389.0" prefWidth="1010.0">
               <xAxis>
                 <CategoryAxis id="DateXAxis" side="BOTTOM" />
               </xAxis>
@@ -42,9 +41,15 @@
                 <NumberAxis id="ValuteYAxis" side="LEFT" />
               </yAxis>
             </LineChart>
-            <Label layoutX="292.0" layoutY="61.0" text="Первая дата" />
-            <Label layoutX="478.0" layoutY="61.0" text="Вторая дата" />
-            <Button id="dynamicbutton" layoutX="699.0" layoutY="86.0" mnemonicParsing="false" onAction="#onClickMethodDynamic" text="Узнать" />
+            <Label layoutX="45.0" layoutY="168.0" text="Первая дата" />
+            <Label layoutX="328.0" layoutY="168.0" text="Вторая дата" />
+            <Button id="dynamicbutton" layoutX="579.0" layoutY="195.0" mnemonicParsing="false" onAction="#onClickMethodDynamic" text="Узнать" />
+            <DatePicker fx:id="date" layoutX="45.0" layoutY="61.0" />
+            <DatePicker fx:id="firstdate" layoutX="45.0" layoutY="195.0" />
+            <DatePicker fx:id="seconddate" layoutX="328.0" layoutY="195.0" />
+            <ButtonBar layoutX="665.0" layoutY="187.0" prefHeight="40.0" prefWidth="200.0" />
+            <ComboBox fx:id="requesthistory" layoutX="621.0" layoutY="58.0" onAction="#onClickMethodHistory" prefHeight="24.0" prefWidth="362.0" promptText="История запросов" />
+            <Button fx:id="clearHistory" layoutX="621.0" layoutY="101.0" mnemonicParsing="false" onAction="#onClickMethodClear" prefHeight="24.0" prefWidth="171.0" text="Очистка истории" />
       </children>
     </AnchorPane>
   </children>

@@ -6,11 +6,21 @@ import java.io.InputStreamReader;
 import java.io.StringReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.sql.*;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Date;
 
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.chart.LineChart;
 import javafx.scene.chart.XYChart;
+import javafx.scene.control.Alert;
+import javafx.scene.control.ComboBox;
+import javafx.scene.control.DatePicker;
 import javafx.scene.control.TextField;
 import javafx.scene.text.Text;
 import org.w3c.dom.DOMException;
@@ -31,13 +41,16 @@ public class mainController {
     private LineChart<String, Number> chart;
 
     @FXML
-    private TextField firstdate;
+    private ComboBox<String> requesthistory;
 
     @FXML
-    private TextField seconddate;
+    private DatePicker firstdate;
 
     @FXML
-    public TextField date;
+    private DatePicker seconddate;
+
+    @FXML
+    public DatePicker date;
 
     @FXML
     public TextField charcode;
@@ -46,130 +59,220 @@ public class mainController {
     public Text text_output;
 
     @FXML
-    void initialize() {
-        /*
-        XYChart.Series<String, Number> series = new XYChart.Series<String, Number>();
+    void initialize() throws ClassNotFoundException, SQLException {
+        ArrayList<String> historyList = new ArrayList<>();
 
-        series.getData().add(new XYChart.Data<String, Number>("01/02/2000", 0));
-        series.getData().add(new XYChart.Data<String, Number>("05/02/2000", 4));
-        series.getData().add(new XYChart.Data<String, Number>("06/02/2000", 8));
-        series.getData().add(new XYChart.Data<String, Number>("10/02/2000", 12));
+        Class.forName("org.h2.Driver");
+        Connection connection = DriverManager.getConnection("jdbc:h2:~/IdeaProjects/service_cb/db/ExchangeRateDB");
 
-        chart.getData().add(series);
+        Statement statement = connection.createStatement();
+        ResultSet resultSet = statement.executeQuery("select name from service");
 
-         */
+        while (resultSet.next()) {
+            historyList.add(resultSet.getString("name"));
+        }
+
+        requesthistory.getItems().setAll(historyList);
+        connection.close();
     }
 
     @FXML
-    void onClickMethodDaily(ActionEvent actionEvent) throws IOException, ParserConfigurationException, SAXException, XPathExpressionException {
-        String getUserDate = date.getText();
-        String getUserCode = charcode.getText();
+    void onClickMethodDaily(ActionEvent actionEvent) throws IOException, ParserConfigurationException, SAXException, XPathExpressionException, ParseException, SQLException, ClassNotFoundException {
+        if (date.getValue() != null) {
+            LocalDate dateonerequest = date.getValue();
+            String strdate = dateonerequest.toString();
+            SimpleDateFormat dt = new SimpleDateFormat("yyyy-mm-dd");
+            Date date = dt.parse(strdate);
+            SimpleDateFormat dt1 = new SimpleDateFormat("dd-mm-yyyy");
+            String getUserDate = dt1.format(date).replace('-', '/');
 
-        if (!getUserDate.equals("")) {
-            String output = "http://www.cbr.ru/scripts/XML_daily.asp?date_req=" + getUserDate;
 
-            URL url = new URL(output);
-            HttpURLConnection connection = (HttpURLConnection) url.openConnection();
+            String getUserCode = charcode.getText();
 
-            BufferedReader in = new BufferedReader(new InputStreamReader(connection.getInputStream()));
-            String inputLine = null;
-            StringBuffer content = new StringBuffer();
+            if (!getUserCode.equals("")) {
+                String output = "http://www.cbr.ru/scripts/XML_daily.asp?date_req=" + getUserDate;
 
-            while (true) {
-                try {
-                    if ((inputLine = in.readLine()) == null) break;
-                } catch (IOException e) {
-                    e.printStackTrace();
+                URL url = new URL(output);
+                HttpURLConnection connection = (HttpURLConnection) url.openConnection();
+
+                BufferedReader in = new BufferedReader(new InputStreamReader(connection.getInputStream()));
+                String inputLine = null;
+                StringBuffer content = new StringBuffer();
+
+                while (true) {
+                    try {
+                        if ((inputLine = in.readLine()) == null) break;
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+                    content.append(inputLine);
                 }
-                content.append(inputLine);
-            }
-            in.close();
+                in.close();
 
 
-            if (!output.isEmpty()) {
-                NodeList nl = null;
-                String result = null;
+                if (!output.isEmpty()) {
+                    NodeList nl = null;
+                    String result = null;
 
-                DocumentBuilderFactory domFactory = DocumentBuilderFactory.newInstance();
-                DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
-                DocumentBuilder builder = factory.newDocumentBuilder();
-                Document doc = builder.parse(new InputSource(new StringReader(content.toString())));
-                XPathFactory xPathfactory = XPathFactory.newInstance();
-                XPath xpath = xPathfactory.newXPath();
+                    DocumentBuilderFactory domFactory = DocumentBuilderFactory.newInstance();
+                    DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
+                    DocumentBuilder builder = factory.newDocumentBuilder();
+                    Document doc = builder.parse(new InputSource(new StringReader(content.toString())));
+                    XPathFactory xPathfactory = XPathFactory.newInstance();
+                    XPath xpath = xPathfactory.newXPath();
 
-                XPathExpression cod = xpath.compile("//ValCurs/Valute[CharCode='" + getUserCode + "']/Value/text()");
+                    XPathExpression cod = xpath.compile("//ValCurs/Valute[CharCode='" + getUserCode + "']/Value/text()");
 
-                nl = (NodeList) cod.evaluate(doc, XPathConstants.NODESET);
+                    nl = (NodeList) cod.evaluate(doc, XPathConstants.NODESET);
 
-                for (int i = 0; i < nl.getLength(); i++) {
-                    Node n = nl.item(i);
-                    result = n.getTextContent();
+                    for (int i = 0; i < nl.getLength(); i++) {
+                        Node n = nl.item(i);
+                        result = n.getTextContent();
+                    }
+                    text_output.setText("Курс "+ getUserCode +" на "+ getUserDate +" составляет: "+ result+"");
+
+                    Class.forName("org.h2.Driver");
+                    Connection connectionsql = DriverManager.getConnection("jdbc:h2:~/IdeaProjects/service_cb/db/ExchangeRateDB");
+
+                    Statement statement = connectionsql.createStatement();
+                    statement.execute("insert into service(name, date, code, valute) values('Курс "+getUserCode+" на: "+getUserDate+"','"+getUserDate+"', '"+getUserCode+"', '"+result+"')");
+
+                    ResultSet resultSet = statement.executeQuery("select * from service");
+                    connectionsql.close();
+
                 }
-                text_output.setText("Курс равен: " + result);
+            }else {
+                Alert alert = new Alert(Alert.AlertType.INFORMATION);
 
+                alert.setTitle("test");
+                alert.setHeaderText(null);
+                alert.setContentText("Введите код!");
 
+                alert.showAndWait();
             }
+
+        }else {
+            Alert alert = new Alert(Alert.AlertType.INFORMATION);
+
+            alert.setTitle("test");
+            alert.setHeaderText(null);
+            alert.setContentText("Введите дату!");
+
+            alert.showAndWait();
         }
     }
 
     @FXML
-    void onClickMethodDynamic(ActionEvent actionEvent) throws IOException {
-        String getUserCode = charcode.getText();
-        String getUserFDate = firstdate.getText();
-        String getUserSDate = seconddate.getText();
-        String valutecode = Valutecode(getUserCode);
+    void onClickMethodDynamic(ActionEvent actionEvent) throws IOException, ParseException, ClassNotFoundException, ParserConfigurationException, SAXException, XPathExpressionException, SQLException {
 
-        String url = "http://www.cbr.ru/scripts/XML_dynamic.asp?date_req1="+getUserFDate+"&date_req2="+getUserSDate+"&VAL_NM_RQ="+valutecode;
+        if(firstdate.getValue() != null || seconddate.getValue() != null) {
+            LocalDate datefirst = firstdate.getValue();
+            String strfdate = datefirst.toString();
+            SimpleDateFormat dtf = new SimpleDateFormat("yyyy-mm-dd");
+            Date datef = dtf.parse(strfdate);
+            SimpleDateFormat dt1f = new SimpleDateFormat("dd-mm-yyyy");
+            String getUserFDate = dt1f.format(datef).replace('-', '/');
 
-        URL obj = new URL(url);
-        HttpURLConnection connection = (HttpURLConnection) obj.openConnection();
 
-        connection.setRequestMethod("GET");
+            LocalDate datesecond = seconddate.getValue();
+            String strsdate = datesecond.toString();
+            SimpleDateFormat dts = new SimpleDateFormat("yyyy-mm-dd");
+            Date dates = dts.parse(strsdate);
+            SimpleDateFormat dt1s = new SimpleDateFormat("dd-mm-yyyy");
+            String getUserSDate = dt1s.format(dates).replace('-', '/');
 
-        BufferedReader in = new BufferedReader(new InputStreamReader(connection.getInputStream()));
-        String inputLine = null;
-        StringBuilder listdymamic = new StringBuilder();
+            String getUserCode = charcode.getText();
+            if (!getUserCode.equals("")) {
 
-        while (true) {
-            try {
-                if ((inputLine = in.readLine()) == null) break;
-            } catch (IOException e) {
-                e.printStackTrace();
+                ArrayList<String> dateList = new ArrayList<>();
+                ArrayList<String> valueList = new ArrayList<>();
+
+                String valutecode = Valutecode(getUserCode);
+
+                String url = "http://www.cbr.ru/scripts/XML_dynamic.asp?date_req1=" + getUserFDate + "&date_req2=" + getUserSDate + "&VAL_NM_RQ=" + valutecode;
+
+                URL obj = new URL(url);
+                HttpURLConnection connection = (HttpURLConnection) obj.openConnection();
+
+                connection.setRequestMethod("GET");
+
+                BufferedReader in = new BufferedReader(new InputStreamReader(connection.getInputStream()));
+                String inputLine = null;
+                StringBuilder listdymamic = new StringBuilder();
+
+                while (true) {
+                    try {
+                        if ((inputLine = in.readLine()) == null) break;
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+                    listdymamic.append(inputLine);
+                }
+                in.close();
+
+                NodeList value;
+                NodeList date;
+                XYChart.Series<String, Number> series = new XYChart.Series<String, Number>();
+
+                    DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
+                    DocumentBuilder builder = factory.newDocumentBuilder();
+                    Document doc = builder.parse(new InputSource(new StringReader(listdymamic.toString())));
+
+                    XPathFactory xPathfactory = XPathFactory.newInstance();
+                    XPath xpath = xPathfactory.newXPath();
+
+                    XPathExpression valV = xpath.compile("/ValCurs/Record/Value/text()");
+
+                    XPathExpression valD = xpath.compile("/ValCurs/Record/@Date");
+
+                    value = (NodeList) valV.evaluate(doc, XPathConstants.NODESET);
+                    date = (NodeList) valD.evaluate(doc, XPathConstants.NODESET);
+
+                    //глюк с анимацией
+                    chart.setAnimated(false);
+
+                    series.setName(getUserCode);
+
+                    for (int i = 0; i < value.getLength(); i++) {
+                        String valuestring = value.item(i).getTextContent().replace(',', '.');
+                        double valued = Double.parseDouble(valuestring);
+                        series.getData().add(new XYChart.Data<String, Number>(date.item(i).getTextContent(), valued));
+                        dateList.add(date.item(i).getTextContent());
+                        valueList.add(String.valueOf(valued));
+                    }
+                    chart.getData().add(series);
+
+                    //System.out.println(dateList);
+                    //System.out.println(valueList);
+
+                    Class.forName("org.h2.Driver");
+                    Connection connection1 = DriverManager.getConnection("jdbc:h2:~/IdeaProjects/service_cb/db/ExchangeRateDB");
+
+                    Statement statement = connection1.createStatement();
+                    statement.execute("insert into service(name, date, code, valute) values('Курс "+getUserCode+" с : "+getUserFDate+" по: "+getUserSDate+"', '"+dateList+"', '"+getUserCode+"', '"+valueList+"')");
+
+                    ResultSet resultSet = statement.executeQuery("select * from service");
+                    System.out.println(resultSet);
+                    connection.disconnect();
+
+            }else {
+                Alert alert = new Alert(Alert.AlertType.INFORMATION);
+
+                alert.setTitle("test");
+                alert.setHeaderText(null);
+                alert.setContentText("Введите код!");
+
+                alert.showAndWait();
             }
-            listdymamic.append(inputLine);
+        }else {
+            Alert alert = new Alert(Alert.AlertType.INFORMATION);
+
+            alert.setTitle("test");
+            alert.setHeaderText(null);
+            alert.setContentText("Введите даты!");
+
+            alert.showAndWait();
         }
-        in.close();
-
-        NodeList value;
-        NodeList date;
-        XYChart.Series<String, Number> series = new XYChart.Series<String, Number>();
-
-        try {
-            DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
-            DocumentBuilder builder = factory.newDocumentBuilder();
-            Document doc = builder.parse(new InputSource(new StringReader(listdymamic.toString())));
-
-            XPathFactory xPathfactory = XPathFactory.newInstance();
-            XPath xpath = xPathfactory.newXPath();
-
-            XPathExpression valV = xpath.compile("/ValCurs/Record/Value/text()");
-
-            XPathExpression valD = xpath.compile("/ValCurs/Record/@Date");
-
-            value = (NodeList) valV.evaluate(doc, XPathConstants.NODESET);
-            date = (NodeList) valD.evaluate(doc, XPathConstants.NODESET);
-
-            for (int i = 0; i < value.getLength(); i++) {
-                String valuestring = value.item(i).getTextContent().replace(',', '.');
-                double valued = Double.parseDouble(valuestring);
-                series.getData().add(new XYChart.Data<String, Number>(date.item(i).getTextContent(), valued));
-            }
-            chart.getData().add(series);
-
-        } catch (ParserConfigurationException | SAXException | IOException | XPathExpressionException | DOMException e) {
-            e.printStackTrace();
-        }
-
     }
 
     public static String Valutecode(String getUserCode) throws IOException {
@@ -218,5 +321,81 @@ public class mainController {
             e.printStackTrace();
         }
         return valutecode;
+    }
+
+    @FXML
+    public void onClickMethodHistory(ActionEvent actionEvent) throws ClassNotFoundException, SQLException {
+        String historyName = requesthistory.getValue();
+
+        Class.forName("org.h2.Driver");
+        Connection connection = DriverManager.getConnection("jdbc:h2:~/IdeaProjects/service_cb/db/ExchangeRateDB");
+
+        Statement statement = connection.createStatement();
+
+        ResultSet resultName = statement.executeQuery("select * from service where name = '"+ historyName +"'");
+
+        if (historyName.length() > 23){
+            //dynamic
+            String resultdate = null;
+            String resultvalute = null;
+            String resultcode = null;
+            while (resultName.next()) {
+                resultvalute = resultName.getString("valute").replace("[", "").replace("]","");
+                resultdate = resultName.getString("date").replace("[", "").replace("]","");
+                resultcode = resultName.getString("code");
+
+            }
+            ArrayList<String> valuteList = new ArrayList<String>(Arrays.asList(resultvalute.split(",")));
+            ArrayList<String> dateList = new ArrayList<String>(Arrays.asList(resultdate.split(",")));
+
+            XYChart.Series<String, Number> series = new XYChart.Series<String, Number>();
+
+            chart.setAnimated(false);
+
+            series.setName(resultcode);
+
+            for (int i = 0; i < valuteList.size(); i++) {
+                series.getData().add(new XYChart.Data<String, Number>(dateList.get(i), Double.parseDouble(valuteList.get(i))));
+            }
+            chart.getData().add(series);
+
+        }else {
+            //daily
+            while (resultName.next()) {
+                text_output.setText("Курс "+resultName.getString("code")+" на "+resultName.getString("date")+" составляет: "+resultName.getString("valute")+" ");
+            }
+        }
+        connection.close();
+        /*
+        Class.forName("org.h2.Driver");
+        Connection connection = DriverManager.getConnection("jdbc:h2:~/IdeaProjects/service_cb/db/ExchangeRateDB");
+
+        Statement statement = connection.createStatement();
+        ResultSet resultSet = statement.executeQuery("select * from service where name = 'Курс USD с : 01/02/2022 по: 03/02/2022'");
+        String resultdate = null;
+        while (resultSet.next()) {
+            resultdate = resultSet.getString("date").replace("[", "").replace("]","");
+
+        }
+        ArrayList<String> result = new ArrayList<String>(Arrays.asList(resultdate.split(",")));
+        for (int i = 0; i < result.size(); i++){
+            double d = Double.parseDouble(result.get(i));
+            System.out.println(d);
+        }
+
+        connection.close();
+
+         */
+    }
+
+    @FXML
+    public void onClickMethodClear(ActionEvent actionEvent) throws ClassNotFoundException, SQLException {
+        Class.forName("org.h2.Driver");
+        Connection connection = DriverManager.getConnection("jdbc:h2:~/IdeaProjects/service_cb/db/ExchangeRateDB");
+
+        Statement statement = connection.createStatement();
+        statement.execute("delete from service");
+
+        connection.close();
     }
 }

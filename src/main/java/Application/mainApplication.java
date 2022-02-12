@@ -13,7 +13,7 @@ public class mainApplication extends Application {
     public void start(Stage primaryStage) throws IOException {
 
         FXMLLoader fxmlLoader = new FXMLLoader(mainApplication.class.getResource("app.fxml"));
-        Scene scene = new Scene(fxmlLoader.load(),857,566);
+        Scene scene = new Scene(fxmlLoader.load(),1080,757);
         primaryStage.setTitle("Курсы ЦБ");
         primaryStage.setResizable(false);
         primaryStage.setScene(scene);
