@@ -114,7 +114,6 @@ public class mainController {
                     NodeList nl = null;
                     String result = null;
 
-                    DocumentBuilderFactory domFactory = DocumentBuilderFactory.newInstance();
                     DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
                     DocumentBuilder builder = factory.newDocumentBuilder();
                     Document doc = builder.parse(new InputSource(new StringReader(content.toString())));
@@ -245,14 +244,12 @@ public class mainController {
 
 
                     Class.forName("org.h2.Driver");
-                    Connection connection1 = DriverManager.getConnection("jdbc:h2:~/IdeaProjects/service_cb/db/ExchangeRateDB");
+                    Connection connectionsql = DriverManager.getConnection("jdbc:h2:~/IdeaProjects/service_cb/db/ExchangeRateDB");
 
-                    Statement statement = connection1.createStatement();
+                    Statement statement = connectionsql.createStatement();
                     statement.execute("insert into service(name, date, code, valute) values('Курс "+getUserCode+" с : "+getUserFDate+" по: "+getUserSDate+"', '"+dateList+"', '"+getUserCode+"', '"+valueList+"')");
 
-                    ResultSet resultSet = statement.executeQuery("select * from service");
-                    System.out.println(resultSet);
-                    connection.disconnect();
+                    connectionsql.close();
 
                     initialize();
 
