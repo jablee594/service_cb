@@ -14,9 +14,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
 
-import javafx.beans.Observable;
-import javafx.collections.FXCollections;
-import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.chart.LineChart;
@@ -132,17 +129,16 @@ public class mainController {
                         Node n = nl.item(i);
                         result = n.getTextContent();
                     }
-                    text_output.setText("Курс равен: " + result);
+                    text_output.setText("Курс "+ getUserCode +" на "+ getUserDate +" составляет: "+ result+"");
 
                     Class.forName("org.h2.Driver");
-                    Connection connection1 = DriverManager.getConnection("jdbc:h2:~/IdeaProjects/service_cb/db/ExchangeRateDB");
+                    Connection connectionsql = DriverManager.getConnection("jdbc:h2:~/IdeaProjects/service_cb/db/ExchangeRateDB");
 
-                    Statement statement = connection1.createStatement();
+                    Statement statement = connectionsql.createStatement();
                     statement.execute("insert into service(name, date, code, valute) values('Курс "+getUserCode+" на: "+getUserDate+"','"+getUserDate+"', '"+getUserCode+"', '"+result+"')");
 
                     ResultSet resultSet = statement.executeQuery("select * from service");
-                    System.out.println(resultSet);
-                    connection.disconnect();
+                    connectionsql.close();
 
                 }
             }else {
@@ -327,14 +323,54 @@ public class mainController {
         return valutecode;
     }
 
-    public void onClickMethodHistory(ActionEvent actionEvent) {
-        System.out.println("Click!");
+    @FXML
+    public void onClickMethodHistory(ActionEvent actionEvent) throws ClassNotFoundException, SQLException {
+        String historyName = requesthistory.getValue();
 
+        Class.forName("org.h2.Driver");
+        Connection connection = DriverManager.getConnection("jdbc:h2:~/IdeaProjects/service_cb/db/ExchangeRateDB");
+
+        Statement statement = connection.createStatement();
+
+        ResultSet resultName = statement.executeQuery("select * from service where name = '"+ historyName +"'");
+
+        if (historyName.length() > 23){
+            //dynamic
+            String resultdate = null;
+            String resultvalute = null;
+            String resultcode = null;
+            while (resultName.next()) {
+                resultvalute = resultName.getString("valute").replace("[", "").replace("]","");
+                resultdate = resultName.getString("date").replace("[", "").replace("]","");
+                resultcode = resultName.getString("code");
+
+            }
+            ArrayList<String> valuteList = new ArrayList<String>(Arrays.asList(resultvalute.split(",")));
+            ArrayList<String> dateList = new ArrayList<String>(Arrays.asList(resultdate.split(",")));
+
+            XYChart.Series<String, Number> series = new XYChart.Series<String, Number>();
+
+            chart.setAnimated(false);
+
+            series.setName(resultcode);
+
+            for (int i = 0; i < valuteList.size(); i++) {
+                series.getData().add(new XYChart.Data<String, Number>(dateList.get(i), Double.parseDouble(valuteList.get(i))));
+            }
+            chart.getData().add(series);
+
+        }else {
+            //daily
+            while (resultName.next()) {
+                text_output.setText("Курс "+resultName.getString("code")+" на "+resultName.getString("date")+" составляет: "+resultName.getString("valute")+" ");
+            }
+        }
+        connection.close();
         /*
         Class.forName("org.h2.Driver");
-        Connection connection4 = DriverManager.getConnection("jdbc:h2:~/IdeaProjects/service_cb/db/ExchangeRateDB");
+        Connection connection = DriverManager.getConnection("jdbc:h2:~/IdeaProjects/service_cb/db/ExchangeRateDB");
 
-        Statement statement = connection4.createStatement();
+        Statement statement = connection.createStatement();
         ResultSet resultSet = statement.executeQuery("select * from service where name = 'Курс USD с : 01/02/2022 по: 03/02/2022'");
         String resultdate = null;
         while (resultSet.next()) {
@@ -342,17 +378,24 @@ public class mainController {
 
         }
         ArrayList<String> result = new ArrayList<String>(Arrays.asList(resultdate.split(",")));
-        //System.out.println(result);
-
-        //double[] doubles = new double[result.size()];
         for (int i = 0; i < result.size(); i++){
             double d = Double.parseDouble(result.get(i));
             System.out.println(d);
         }
-        //System.out.println(doubles);
 
-        connection4.close();
+        connection.close();
 
          */
+    }
+
+    @FXML
+    public void onClickMethodClear(ActionEvent actionEvent) throws ClassNotFoundException, SQLException {
+        Class.forName("org.h2.Driver");
+        Connection connection = DriverManager.getConnection("jdbc:h2:~/IdeaProjects/service_cb/db/ExchangeRateDB");
+
+        Statement statement = connection.createStatement();
+        statement.execute("delete from service");
+
+        connection.close();
     }
 }
